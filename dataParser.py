@@ -5,7 +5,7 @@ from openpyxl import load_workbook
 #Choose a working directory
 os.chdir(r"C:\Users\TEF\Documents\Python_Demo")
 
-def txt_parser(Result):
+def txt_parser(DataSource):
     #首先选择一个工作目录创建一个Excel文件：Result_Model.xlsx
     path = r"C:\Users\TEF\Desktop\result_output\Result_Model.xlsx"
     book = load_workbook(path)
@@ -36,10 +36,10 @@ def txt_parser(Result):
     writer.close()
   
  if __name__ == "__main__":
-    with open("Result.txt") as f:
+    with open("originalData.txt") as f:
       content = f.readlines()
     #remove whitespace characters like `\n` at the end of each line
-    Result= [x.strip() for x in content]
-    txt_parser(Result)
+    datasource= [x.strip() for x in content]
+    txt_parser(datasource)
     
     
