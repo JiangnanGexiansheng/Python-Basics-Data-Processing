@@ -1,0 +1,17 @@
+KPIStart
+KPI/Value
+Productivity/28.7
+LabourCost/0.35
+InventoryCost/874088.9953
+TotalHC/177.0
+KPIEnd
+ShiftPlan1Start
+Operation/MAE_Qty/ShiftModel/WD/HC
+Matching/7/14-shifts-model/29.0/33.0
+Turning/5/14-shifts-model/28.0/39.0
+Washing/2/14-shifts-model/28.0/15.0
+HCC/4/14-shifts-model/29.0/12.0
+Grinding/13/14-shifts-model/29.0/33.0
+HE/10/14-shifts-model/29.0/21.0
+Piston/6/14-shifts-model/28.0/24.0
+ShiftPlan1End
