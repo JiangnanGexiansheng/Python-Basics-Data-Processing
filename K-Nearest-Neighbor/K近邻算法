@@ -1,0 +1,124 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Jul 19 10:29:19 2019
+
+@author: GZW
+"""
+
+import os
+import numpy as np
+import operator
+from os import listdir
+os.chdir(r"C:\Users\TEF\Desktop\K近邻算法")
+"""def createDataSet():
+    group = np.array([[1.0,1.1],[1.0,1.0],[0,0],[0,0.1]])
+    labels = ['A','A','B','B']
+    return group,labels
+group, labels = createDataSet()
+print('group', group)
+print('labels', labels)"""
+
+
+#将32*32的数据图像转换成1*1024的向量
+def img2vector(filename):
+    #初始化数据向量
+    returnVect = np.zeros((1,1024))
+    #打开数据文件，读取每行的内容
+    fr = open(filename)
+    for i in range(32):
+        #读取每一行
+        lineStr = fr.readline()
+        #将每行的32个字符转换成int存入向量
+        for j in range(32):
+            returnVect[0,32*i+j] = int(lineStr[j])
+    return returnVect
+#img2vector(r'trainingDigits\0_0.txt')
+
+def classify(inputX, dataSet, labels, k):
+    """
+    参数：
+    -inputX：用于分类的输入向量
+    -dataSet：输入的训练样本
+    -labels：样本数据的分类标签向量
+    -k：用于选择最近邻居的数目
+    """
+    #inputX,dataSet,labels,k=[0,0], group, labels, 3
+    
+    #获取样本的数据量
+    dataSetSize = dataSet.shape[0]
+    #计算每个样本数据与待测试输入向量之间的差值
+    diffMat = np.tile(inputX,(dataSetSize,1)) - dataSet
+    #对差值求平方和
+    sqDiffMat = diffMat**2
+    sqDistances = sqDiffMat.sum(axis = 1)
+    
+    #取平方根，得到距离向量
+    distances = sqDistances**0.5
+    
+    #按照距离从低到高排序
+    sortedDistances = distances.argsort()
+    classCount = {}
+    #依次取出最近的 K个样本数据
+    for i in range(k):
+        #记录该样本数据所属的类别
+        voteIlabel = labels[sortedDistances[i]]
+        classCount[voteIlabel] = classCount.get(voteIlabel,0)+1
+    
+    #对类别出现的频次进行排序,从高到低
+    # key=operator.itemgetter(1)用来选择进行比较的元素
+    sortedClassCount = sorted(classCount.items(), key=operator.itemgetter(1), reverse=True)
+    #sortedClassCount = sorted(classCount.items(), key= lambda x:x[1], reverse=True)
+    #返回出现次数最高的类别
+    return sortedClassCount[0][0]
+    
+
+def handWritingClassTest():
+    #样本数据的分类标签列表
+    hwLabels = []
+    #读取样本数据文件列表
+    trainingFileList = listdir('trainingDigits')
+    m = len(trainingFileList)
+    #初始化样本数据矩阵(m*1024)
+    trainingMat = np.zeros((m, 1024))
+    
+    #读取所有的样本数据到数据矩阵
+    for i in range(m):
+        #提取文件名中的数字
+        fileNameStr = trainingFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNum = int(fileStr.split('_')[0])
+        hwLabels.append(classNum)
+        #读取所有样本数据到数据矩阵
+        trainingMat[i,:] = img2vector('trainingDigits\%s' % fileNameStr)
+    
+    #读取测试文件列表
+    testFileList = listdir('testDigits')
+    #获取测试文件的总数
+    testFileNumber = len(testFileList)
+    #循环测试每个待测试文件
+    #初始化错误率
+    errorCount = 0.0
+    for i in range(testFileNumber):
+        #提取测试文件名中的数字
+        fileNameStr = testFileList[i]
+        fileStr = fileNameStr.split('.')[0]
+        classNumStr = int(fileStr.split('_')[0])
+        
+        #提取测试文件的数据向量
+        testVector = img2vector('testDigits\%s' % fileNameStr)
+        
+        #确定待测试文件的类别
+        testFileResult = classify(testVector, trainingMat, hwLabels, 3)
+        
+        #打印 K Nearest Neighbor算法的分类结果和真实的分类
+        print("测试样本 %d, 分类器的预测：%d, 真实类别：%d" % (i+1, testFileResult, classNumStr))
+        #判断K近邻算法结果是否准确
+        if(testFileResult != classNumStr):
+            errorCount +=1.0
+    #打印错误率
+    print("\n错误的分类共计：%d" % errorCount)
+    print("\n错误的分类比例：%f" % (errorCount/float(testFileNumber)))
+
+handWritingClassTest()
+
+
